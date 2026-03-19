@@ -104,7 +104,7 @@ exports.getMyRequests = async (req, res) => {
       return res.status(403).json({ message: 'Only clients can view their requests here' });
     }
     const requests = await Request.find({ createdBy: req.user.id })
-      .populate('applicants.user', 'name email skills rating experience');
+      .populate('applicants.user', 'name email skills rating experience location profileImage');
     res.status(200).json(requests);
   } catch (error) {
     console.error(error);

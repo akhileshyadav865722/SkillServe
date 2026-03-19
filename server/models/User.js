@@ -30,6 +30,22 @@ const UserSchema = new mongoose.Schema({
     type: [String],
     default: []
   },
+  location: {
+    type: String,
+    default: ''
+  },
+  phone: {
+    type: String,
+    default: ''
+  },
+  bio: {
+    type: String,
+    default: ''
+  },
+  location: {
+    type: String,
+    default: ''
+  },
   experience: {
     type: Number, // in years
     default: 0

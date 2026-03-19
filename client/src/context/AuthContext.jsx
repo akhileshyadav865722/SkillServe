@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import api from '../api/axios';
 
 export const AuthContext = createContext();
 
@@ -7,13 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [loading, setLoading] = useState(true);
-
-  // Set default axios header
-  if (token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  } else {
-    delete axios.defaults.headers.common['Authorization'];
-  }
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -22,7 +17,7 @@ export const AuthProvider = ({ children }) => {
         return;
       }
       try {
-        const res = await axios.get('http://localhost:5000/api/auth/profile');
+        const res = await api.get('/auth/profile');
         setUser(res.data);
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -36,14 +31,14 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   const login = async (formdata) => {
-    const res = await axios.post('http://localhost:5000/api/auth/login', formdata);
+    const res = await api.post('/auth/login', formdata);
     localStorage.setItem('token', res.data.token);
     setToken(res.data.token);
     setUser(res.data);
   };
 
   const register = async (formdata) => {
-    const res = await axios.post('http://localhost:5000/api/auth/register', formdata);
+    const res = await api.post('/auth/register', formdata);
     localStorage.setItem('token', res.data.token);
     setToken(res.data.token);
     setUser(res.data);
@@ -53,6 +48,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     setToken(null);
     setUser(null);
+    navigate('/');
   };
 
   return (

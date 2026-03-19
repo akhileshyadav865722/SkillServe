@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { getReviews } = require('../controllers/reviewController');
-const { getUserProfile } = require('../controllers/userController');
+const { getUserProfile, getProfessionals } = require('../controllers/userController');
+
+// Get all professionals (must be before /:id)
+router.route('/professionals').get(getProfessionals);
 
 // Get public user profile
 router.route('/:id').get(getUserProfile);

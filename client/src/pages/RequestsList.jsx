@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
@@ -11,7 +11,7 @@ function RequestsList() {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/requests');
+        const res = await api.get('/requests');
         setRequests(res.data);
       } catch (error) {
         console.error('Error fetching requests', error);
@@ -24,7 +24,7 @@ function RequestsList() {
 
   const handleApply = async (requestId) => {
     try {
-      await axios.post(`http://localhost:5000/api/requests/${requestId}/apply`, {}, {
+      await api.post(`/requests/${requestId}/apply`, {}, {
         headers: { Authorization: `Bearer ${user.token || localStorage.getItem('token')}` }
       });
       alert('Successfully applied to request!');
@@ -63,64 +63,71 @@ function RequestsList() {
           <p className="mt-1 text-sm text-gray-500">There are no service requests available at the moment.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="flex flex-col space-y-6">
           {requests.map(req => (
-            <div key={req._id} className="card group flex flex-col justify-between hover:border-primary-200">
-              <div className="p-7">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-primary-700 transition-colors">{req.title}</h3>
-                  <span className="inline-flex items-center rounded-md bg-indigo-50 px-2 lg:px-2.5 py-1 text-xs font-semibold text-indigo-700 ring-1 ring-inset ring-indigo-700/10 whitespace-nowrap ml-2 shadow-sm">
+            <div key={req._id} className="glass group relative flex flex-col md:flex-row md:items-center justify-between p-6 sm:p-8 rounded-[24px] border border-white/60 shadow-lg shadow-gray-200/50 hover:shadow-xl hover:shadow-[var(--color-primary)]/10 hover:-translate-y-1 hover:border-[var(--color-primary)]/30 transition-all duration-500 overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[var(--color-secondary)]/10 to-transparent rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+
+              <div className="flex-1 min-w-0 pr-0 md:pr-8">
+                <div className="flex flex-wrap items-center gap-3 mb-3">
+                  <span className="inline-flex items-center justify-center rounded-full bg-[var(--color-primary)]/10 px-3 py-1 text-xs font-bold text-[var(--color-primary)] ring-1 ring-inset ring-[var(--color-primary)]/20">
                     {req.category}
                   </span>
-                </div>
-                
-                <div className="space-y-2 mb-4 text-sm text-gray-600">
-                  <div className="flex items-center">
-                    <svg className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     Deadline: {new Date(req.deadline).toLocaleDateString()}
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                  </span>
+                </div>
+                
+                <h3 className="text-xl sm:text-2xl font-black text-gray-900 group-hover:text-[var(--color-primary)] transition-colors mb-4 line-clamp-2">{req.title}</h3>
+                
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-gray-600 mb-5">
+                  <div className="flex items-center bg-white/60 px-3 py-1.5 rounded-lg border border-gray-100 shadow-sm">
+                    <svg className="mr-2 h-4 w-4 text-[var(--color-secondary)]" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                     </svg>
-                    {req.location}
+                    <span className="font-semibold text-gray-700">{req.location}</span>
                   </div>
-                  <div className="flex items-center font-medium text-gray-900">
-                    <svg className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                  <div className="flex items-center bg-emerald-50/80 px-3 py-1.5 rounded-lg border border-emerald-100 shadow-sm">
+                    <svg className="mr-2 h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    ${req.budget}
+                    <span className="font-bold text-emerald-700">Budget: ${req.budget}</span>
                   </div>
                 </div>
                 
                 {req.requiredSkills && req.requiredSkills.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-gray-100">
-                    <div className="flex flex-wrap gap-2">
-                      {req.requiredSkills.map((skill, index) => (
-                        <span key={index} className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {req.requiredSkills.slice(0, 5).map((skill, index) => (
+                      <span key={index} className="inline-flex items-center rounded-lg bg-gray-50 px-2.5 py-1 text-xs font-semibold text-gray-500 border border-gray-200 transition-colors group-hover:bg-white group-hover:border-[var(--color-primary)]/20 group-hover:text-gray-700">
+                        {skill}
+                      </span>
+                    ))}
+                    {req.requiredSkills.length > 5 && (
+                      <span className="inline-flex items-center rounded-lg bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-500 border border-gray-200">
+                        +{req.requiredSkills.length - 5}
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
 
-              <div className="bg-gray-50/50 px-7 py-5 flex gap-4 border-t border-gray-100 mt-auto">
+              <div className="mt-6 md:mt-0 flex flex-row md:flex-col gap-3 min-w-[200px] shrink-0 border-t md:border-t-0 md:border-l border-gray-100/80 pt-5 md:pt-0 md:pl-8 relative z-10">
                 <Link 
                   to={`/requests/${req._id}`} 
-                  className="btn-outline flex-1 text-center py-2"
+                  className="btn-outline flex-1 md:flex-none py-3 text-center w-full justify-center group/btn hover:bg-gray-50"
                 >
                   View Details
+                  <svg className="w-4 h-4 ml-2 inline-block transform group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </Link>
                 
                 {user?.role === 'professional' && (
                   <button 
                     onClick={() => handleApply(req._id)}
-                    className="btn-primary flex-1 py-2"
+                    className="btn-primary flex-1 md:flex-none py-3 w-full shadow-md shadow-[var(--color-primary)]/20 hover:shadow-lg hover:shadow-[var(--color-primary)]/40 hover:-translate-y-0.5 transition-all outline-none"
                   >
                     Apply Now
                   </button>

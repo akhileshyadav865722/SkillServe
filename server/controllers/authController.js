@@ -39,6 +39,7 @@ exports.registerUser = async (req, res) => {
     if (userData.role === 'professional') {
       if (skills) userData.skills = skills;
       if (experience) userData.experience = experience;
+      if (req.body.location) userData.location = req.body.location;
     }
 
     // Create user
@@ -53,6 +54,7 @@ exports.registerUser = async (req, res) => {
         skills: user.skills,
         experience: user.experience,
         rating: user.rating,
+        location: user.location,
         token: generateToken(user._id),
       });
     } else {
@@ -83,6 +85,9 @@ exports.loginUser = async (req, res) => {
         skills: user.skills,
         experience: user.experience,
         rating: user.rating,
+        location: user.location,
+        phone: user.phone,
+        bio: user.bio,
         token: generateToken(user._id),
       });
     } else {
@@ -122,6 +127,9 @@ exports.updateUserProfile = async (req, res) => {
         if (req.body.resume) user.resume = req.body.resume;
         if (req.body.skills) user.skills = req.body.skills;
         if (req.body.experience !== undefined) user.experience = req.body.experience;
+        if (req.body.location !== undefined) user.location = req.body.location;
+        if (req.body.phone !== undefined) user.phone = req.body.phone;
+        if (req.body.bio !== undefined) user.bio = req.body.bio;
       }
 
       if (req.body.password) {
@@ -139,8 +147,11 @@ exports.updateUserProfile = async (req, res) => {
         skills: updatedUser.skills,
         experience: updatedUser.experience,
         rating: updatedUser.rating,
+        location: updatedUser.location,
         profileImage: updatedUser.profileImage,
         resume: updatedUser.resume,
+        phone: updatedUser.phone,
+        bio: updatedUser.bio,
         token: generateToken(updatedUser._id),
       });
     } else {
