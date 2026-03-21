@@ -1,6 +1,5 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import NavigationArrows from './components/NavigationArrows';
 import Footer from './components/Footer';
 import AuthModal from './components/AuthModal';
 import Home from './pages/Home';
@@ -14,15 +13,18 @@ import ChatPage from './pages/ChatPage';
 import PlannerPackages from './pages/PlannerPackages';
 import QuickHire from './pages/QuickHire';
 import ServiceHistory from './pages/ServiceHistory';
+import Notifications from './pages/Notifications';
+import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
   const location = useLocation();
   const isChatPage = location.pathname.startsWith('/chat');
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
     <div className="flex flex-col min-h-screen relative overflow-x-hidden">
-      <Navbar />
-      <NavigationArrows />
+      {/* Hide primary navbar/footer if in Obsidian Admin mode */}
+      {!isAdminRoute && <Navbar />}
       <AuthModal />
       <main className="flex-grow w-full relative">
         <Routes>
@@ -37,9 +39,11 @@ function App() {
           <Route path="/planner-package" element={<PlannerPackages />} />
           <Route path="/quick-hire" element={<QuickHire />} />
           <Route path="/service-history" element={<ServiceHistory />} />
+          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </main>
-      {!isChatPage && <Footer />}
+      {!isChatPage && !isAdminRoute && <Footer />}
     </div>
   );
 }

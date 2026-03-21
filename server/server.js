@@ -28,6 +28,7 @@ app.use('/api/requests', require('./routes/requestRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
 
 // Static uploads folder
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
@@ -85,6 +86,22 @@ io.on('connection', (socket) => {
         isRead: false,
         date: new Date(),
       });
+    }
+  });
+
+  // Relay Message Deletion via Socket
+  socket.on("deleteMessage", ({ messageId, receiverId }) => {
+    const user = onlineUsers.find((user) => user.userId === receiverId);
+    if (user) {
+      io.to(user.socketId).emit("getMessageDeleted", messageId);
+    }
+  });
+
+  // Relay Conversation Deletion via Socket
+  socket.on("deleteConversation", ({ conversationId, receiverId }) => {
+    const user = onlineUsers.find((user) => user.userId === receiverId);
+    if (user) {
+      io.to(user.socketId).emit("getConversationDeleted", conversationId);
     }
   });
 

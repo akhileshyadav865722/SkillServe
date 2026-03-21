@@ -13,6 +13,12 @@ const ConversationSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    pinnedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      }
+    ],
   },
   { timestamps: true }
 );

@@ -1,5 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+import { useDispatch } from 'react-redux';
+import { addNotification } from '../store/notificationSlice';
 import axios from 'axios';
 
 function QuickHire() {
@@ -8,6 +11,9 @@ function QuickHire() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState('');
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   
   // Available locations map (we extract unique locations from the data or provide a static list)
   const [locations, setLocations] = useState([]);
@@ -176,7 +182,18 @@ function QuickHire() {
                     View Profile
                   </Link>
                   <button 
-                    onClick={() => alert(`Direct hire flow for ${prof.name} will be opened!`)}
+                    onClick={() => {
+                      if (!user) {
+                        navigate('?auth=login');
+                      } else {
+                        dispatch(addNotification({
+                          title: 'Hire Request Sent!',
+                          message: `Your request to hire ${prof.name} has been sent successfully. They will review it shortly.`,
+                          type: 'success',
+                          icon: 'briefcase'
+                        }));
+                      }
+                    }}
                     className="w-full sm:w-32 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-2.5 px-4 rounded-xl text-center shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden group/btn"
                   >
                     <span className="relative z-10 flex items-center justify-center gap-2">

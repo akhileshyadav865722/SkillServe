@@ -16,6 +16,24 @@ const chatSlice = createSlice({
     setConversations: (state, action) => {
       state.conversations = action.payload;
     },
+    removeConversation: (state, action) => {
+      state.conversations = state.conversations.filter(c => c._id !== action.payload);
+      if (state.currentChat && state.currentChat._id === action.payload) {
+        state.currentChat = null; // Clear active chat if it was deleted
+      }
+    },
+    togglePinConversation: (state, action) => {
+      const { conversationId, userId } = action.payload;
+      state.conversations = state.conversations.map(c => {
+        if (c._id === conversationId) {
+            // Guarantee pinnedBy array exists
+            const pinnedBy = c.pinnedBy || [];
+            const isPinned = pinnedBy.includes(userId);
+            return { ...c, pinnedBy: isPinned ? pinnedBy.filter(id => id !== userId) : [...pinnedBy, userId] };
+        }
+        return c;
+      });
+    },
     setCurrentChat: (state, action) => {
       state.currentChat = action.payload;
     },
@@ -24,6 +42,10 @@ const chatSlice = createSlice({
     },
     addMessage: (state, action) => {
       state.messages.push(action.payload);
+    },
+    removeMessage: (state, action) => {
+      // action.payload is the messageId
+      state.messages = state.messages.filter(msg => msg._id !== action.payload);
     },
     setOnlineUsers: (state, action) => {
       state.onlineUsers = action.payload;
@@ -48,9 +70,12 @@ const chatSlice = createSlice({
 
 export const {
   setConversations,
+  removeConversation,
+  togglePinConversation,
   setCurrentChat,
   setMessages,
   addMessage,
+  removeMessage,
   setOnlineUsers,
   setSocket,
   setNotifications,

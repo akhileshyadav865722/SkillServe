@@ -93,3 +93,93 @@ exports.allMessages = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Delete a message
+// @route   DELETE /api/chat/message/:messageId
+// @access  Private
+exports.deleteMessage = async (req, res) => {
+  try {
+    const message = await Message.findById(req.params.messageId);
+
+    if (!message) {
+      return res.status(404).json({ message: "Message not found" });
+    }
+
+    // Ensure the user deleting the message is the sender
+    if (message.senderId.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: "Not authorized to delete this message" });
+    }
+
+    await message.deleteOne();
+    
+    // Optionally update the conversation's lastMessage if this was the last one
+    const latestMessage = await Message.findOne({ conversationId: message.conversationId }).sort({ createdAt: -1 });
+    await Conversation.findByIdAndUpdate(message.conversationId, {
+      lastMessage: latestMessage ? latestMessage.text : ""
+    });
+
+    res.status(200).json({ success: true, messageId: req.params.messageId });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Delete an entire conversation
+// @route   DELETE /api/chat/conversation/:conversationId
+// @access  Private
+exports.deleteConversation = async (req, res) => {
+  try {
+    const conversation = await Conversation.findById(req.params.conversationId);
+    
+    if (!conversation) {
+      return res.status(404).json({ message: "Conversation not found" });
+    }
+
+    // Ensure user is part of the conversation
+    if (!conversation.participants.includes(req.user._id)) {
+        return res.status(401).json({ message: "Not authorized to delete this conversation" });
+    }
+
+    // Delete all associated messages
+    await Message.deleteMany({ conversationId: conversation._id });
+    
+    // Delete the conversation itself
+    await conversation.deleteOne();
+
+    res.status(200).json({ success: true, conversationId: req.params.conversationId });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Toggle pin conversation
+// @route   PUT /api/chat/conversation/:conversationId/pin
+// @access  Private
+exports.pinConversation = async (req, res) => {
+  try {
+    const conversation = await Conversation.findById(req.params.conversationId);
+    
+    if (!conversation) {
+      return res.status(404).json({ message: "Conversation not found" });
+    }
+
+    if (!conversation.participants.includes(req.user._id)) {
+        return res.status(401).json({ message: "Not authorized" });
+    }
+
+    const { _id: userId } = req.user;
+    
+    // Toggle logic
+    if (conversation.pinnedBy.includes(userId)) {
+        conversation.pinnedBy = conversation.pinnedBy.filter(id => id.toString() !== userId.toString());
+    } else {
+        conversation.pinnedBy.push(userId);
+    }
+    
+    await conversation.save();
+
+    res.status(200).json(conversation);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

@@ -22,7 +22,7 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['client', 'professional'],
+    enum: ['client', 'professional', 'admin'],
     default: 'client'
   },
   // Fields primarily for professionals
