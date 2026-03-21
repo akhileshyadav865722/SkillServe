@@ -1,23 +1,10 @@
 import axios from 'axios';
 
-export const BASE_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:5000`;
-
 const api = axios.create({
-  baseURL: `${BASE_URL}/api`,
-  withCredentials: true,
+  baseURL: 'http://localhost:5000/api',
 });
 
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+// Optionally, interceptors could be added here if needed, 
+// but currently tokens are passed explicitly in components.
 
 export default api;

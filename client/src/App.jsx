@@ -29,11 +29,11 @@ function App() {
       <main className="flex-grow w-full relative">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/post-request" element={<PostRequest />} />
-          <Route path="/requests" element={<RequestsList />} />
-          <Route path="/requests/:id" element={<RequestDetails />} />
-          <Route path="/profile" element={<Profile />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/post-request" element={<PostRequest />} />
+                <Route path="/requests" element={<RequestsList />} />
+                <Route path="/requests/:id" element={<RequestDetails />} />
+                <Route path="/profile" element={<Profile />} />
           <Route path="/user/:userId" element={<UserProfile />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/planner-package" element={<PlannerPackages />} />
@@ -44,7 +44,7 @@ function App() {
         </Routes>
       </main>
       {!isChatPage && !isAdminRoute && <Footer />}
-    </div>
+    </div >
   );
 }
 
