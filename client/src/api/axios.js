@@ -1,10 +1,9 @@
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
-});
+export const BASE_URL = 'http://localhost:5000';
 
-// Optionally, interceptors could be added here if needed, 
-// but currently tokens are passed explicitly in components.
+const api = axios.create({
+  baseURL: `${BASE_URL}/api`,
+});
 
 export default api;
