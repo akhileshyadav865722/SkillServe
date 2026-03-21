@@ -130,23 +130,9 @@ const startServer = async () => {
     await mongoose.connect(process.env.MONGO_URI);
     console.log('✅ MongoDB Connected Successfully');
 
-    // Safe Port Handling to prevent EADDRINUSE crash loop explicitly
-    const listenOnPort = (port) => {
-      server.listen(port, () => {
-        console.log(`🚀 SkillServe Backend safely running on port ${port}`);
-      }).on('error', (err) => {
-        if (err.code === 'EADDRINUSE') {
-          console.warn(`⚠️ Port ${port} is currently in use. Falling back to port ${port + 1}...`);
-          // Retry port dynamically
-          listenOnPort(port + 1);
-        } else {
-          console.error(`❌ Server Initialization Error:`, err);
-          process.exit(1);
-        }
-      });
-    };
-
-    listenOnPort(INITIAL_PORT);
+    server.listen(INITIAL_PORT, () => {
+      console.log(`🚀 SkillServe Backend safely running on port ${INITIAL_PORT}`);
+    });
 
   } catch (error) {
     console.error(`❌ Initialization Error: ${error.message}`);

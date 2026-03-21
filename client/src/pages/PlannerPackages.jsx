@@ -9,7 +9,7 @@ import corporateImg from '../assets/images/cooperate.jpg';
 import constructionImg from '../assets/images/construction.jpeg';
 import landscapingImg from '../assets/images/land escaping.jpg';
 import farmManageImg from '../assets/images/farm manage.webp';
-import agricultureImg from '../assets/images/aggrictulture.jpg';
+import agricultureImg from '../assets/images/enviroment.jpg';
 import renovationImg from '../assets/images/renovatio.jpg';
 import environmentImg from '../assets/images/enviroment.jpg';
 import maintenanceImg from '../assets/images/maintance.jpg';
