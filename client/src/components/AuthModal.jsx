@@ -89,7 +89,7 @@ function AuthModal() {
       
       // If an admin tries to login through standard portal, kick them to dashboard anyway, or admin?
       // standard login routes standardly
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       setErrorStatus(error.response?.data?.message || 'Login failed');
     }
@@ -110,7 +110,7 @@ function AuthModal() {
       };
       await register(payload);
       closeModal();
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       setErrorStatus(error.response?.data?.message || 'Registration failed');
     }
